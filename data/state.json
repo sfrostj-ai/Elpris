@@ -1,1 +1,12 @@
-{"sent": {}, "log": []}
+{
+ "sent": {
+  "tomorrow:2026-11-16": "2026-11-15T14:21+01:00"
+ },
+ "log": [
+  {
+   "t": "2026-11-15T14:21+01:00",
+   "title": "Morgendagens billigste timer",
+   "message": "Kl. 02–05 · ca. 1,28 kr/kWh. Billigst kl. 04 (1,28 kr), dyrest kl. 18 (3,22 kr)."
+  }
+ ]
+}
