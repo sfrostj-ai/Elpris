@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E1116">
+<meta name="color-scheme" content="dark">
+<title>Elpris</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preload" href="fonts/inter-400.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="fonts/inter-display-600.woff" as="font" type="font/woff" crossorigin>
+<style>
+/* Skrifttyper ligger i appen selv (Inter, SIL OFL 1.1 – se fonts/OFL.txt), så siden ikke kontakter andre servere */
+@font-face{font-family:Inter;font-style:normal;font-weight:400;font-display:swap;src:url(fonts/inter-400.woff) format('woff')}
+@font-face{font-family:Inter;font-style:normal;font-weight:500;font-display:swap;src:url(fonts/inter-500.woff) format('woff')}
+@font-face{font-family:Inter;font-style:normal;font-weight:600;font-display:swap;src:url(fonts/inter-600.woff) format('woff')}
+@font-face{font-family:Inter;font-style:normal;font-weight:700;font-display:swap;src:url(fonts/inter-700.woff) format('woff')}
+@font-face{font-family:'Inter Display';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/inter-display-600.woff) format('woff')}
+:root{
+  --bg:#0E1116;--surface:#171B22;--surface2:#222832;--line:#222832;--line2:#3A4250;
+  --text:#F2F4F7;--muted:#9AA3B2;--soft:#C3CAD6;--accent:#F5C542;
+  --low:#6CC4FF;--mid:#5B6475;--high:#E8702A;--lowText:#6CC4FF;--midText:#C3CAD6;--highText:#F08A4B;--lowBg:#13283A;
+  --display:'Inter Display',Inter,system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+button,input{font:inherit;color:inherit}
+a{color:var(--muted)}
+.app{max-width:480px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column}
+.view{flex:1 1 auto;display:flex;flex-direction:column;gap:16px;padding:calc(16px + env(safe-area-inset-top)) 20px 20px;outline:none}
+.tabs{position:sticky;bottom:0;display:flex;border-top:1px solid var(--line);background:var(--bg);padding:0 4px env(safe-area-inset-bottom)}
+.tabs a{flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 0 14px;text-decoration:none;color:var(--muted);font-size:11px;font-weight:500;min-height:56px}
+.tabs a[aria-current="page"]{color:var(--accent);font-weight:600}
+.tabs svg{width:22px;height:22px}
+.ico{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px}
+.where{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:13px}
+.where svg{width:16px;height:16px}
+h1{margin:0;font-family:var(--display);font-size:30px;font-weight:600;letter-spacing:-.01em}
+.sub{font-size:14px;color:var(--muted)}
+.switch{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 2px;background:none;border:0;color:var(--muted);font-size:13px;cursor:pointer;flex:0 0 auto}
+.track{width:38px;height:22px;border-radius:11px;background:#2A303A;display:flex;align-items:center;padding:3px;transition:background .15s}
+.knob{width:16px;height:16px;border-radius:8px;background:var(--muted);transition:transform .15s}
+.switch[aria-pressed="true"] .track{background:var(--accent)}
+.switch[aria-pressed="true"] .knob{background:var(--bg);transform:translateX(16px)}
+
+.hero{display:flex;flex-direction:column;gap:8px}
+.hero .lbl{font-size:13px;color:var(--muted)}
+.big{display:flex;align-items:baseline;gap:8px}
+.big b{font-family:var(--display);font-size:68px;font-weight:600;line-height:1;letter-spacing:-.02em}
+.big span{font-size:16px;color:var(--muted)}
+.chiprow{display:flex;align-items:center;gap:10px;font-size:13px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:var(--surface);font-weight:600}
+.chip i{width:8px;height:8px;border-radius:4px;display:block}
+.muted{color:var(--muted)}
+.t-low{color:var(--lowText)}.t-mid{color:var(--midText)}.t-high{color:var(--highText)}
+.b-low{background:var(--low)}.b-mid{background:var(--mid)}.b-high{background:var(--high)}
+
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.stat{background:var(--surface);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:3px}
+.stat small{font-size:12px;color:var(--muted)}
+.stat b{font-family:var(--display);font-size:22px;font-weight:600}
+
+.card{background:var(--surface);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.cardhead{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.cardhead strong{font-size:14px}
+.seg{display:flex;background:var(--bg);border-radius:10px;padding:3px;gap:2px}
+.seg button{min-height:30px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:var(--muted);font-size:12px;font-weight:500;cursor:pointer}
+.seg button[aria-pressed="true"]{background:#2A303A;color:var(--text);font-weight:600}
+
+.bars{height:168px;display:flex;align-items:flex-end;gap:3px}
+.bars.dense{gap:1px}
+.bar{flex:1 1 0;min-width:0;height:100%;padding:0;border:0;background:transparent;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;cursor:pointer}
+.bar .fill{display:block;width:100%;border-radius:3px}
+.bars.dense .fill{border-radius:1px}
+.bar.lv-low .fill{background:var(--low)}.bar.lv-mid .fill{background:var(--mid)}.bar.lv-high .fill{background:var(--high)}
+.bar.dashed .fill{border:1px dashed}
+.bar.dashed.lv-low .fill{background:rgba(108,196,255,.25);border-color:var(--low)}
+.bar.dashed.lv-mid .fill{background:rgba(91,100,117,.4);border-color:var(--mid)}
+.bar.dashed.lv-high .fill{background:rgba(232,112,42,.25);border-color:var(--high)}
+.bar.sel .fill{box-shadow:0 0 0 2px var(--accent)}
+.bars.dense .bar.sel .fill{box-shadow:0 0 0 1px var(--accent)}
+.dot{width:5px;height:5px;border-radius:3px;background:var(--accent);opacity:0;flex:0 0 auto}
+.dot.on{opacity:1}
+.axis{display:flex;gap:3px}
+.axis.dense{gap:1px}
+.axis span{flex:1 1 0;min-width:0;font-size:10px;color:var(--muted);text-align:center;white-space:nowrap;overflow:visible}
+.legend{display:flex;align-items:center;gap:14px;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:8px;height:8px;border-radius:2px;display:block}
+.legend .nu{margin-left:auto}
+.legend .nu i{width:6px;height:6px;border-radius:3px;background:var(--accent)}
+
+.tip{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:14px;padding:12px 14px}
+.tip .ic{width:38px;height:38px;flex:0 0 38px;border-radius:10px;background:var(--lowBg);color:var(--low);display:flex;align-items:center;justify-content:center}
+.tip .ic svg{width:20px;height:20px}
+.tip div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.tip strong{font-size:14px}
+.tip small{font-size:12px;color:var(--muted)}
+.tip.blue{background:var(--lowBg)}
+.tip.blue .ic{background:var(--bg)}
+.tip.blue small{color:var(--soft)}
+
+.countdown{align-items:center;text-align:center;padding:18px}
+.countdown .ic{width:40px;height:40px;border-radius:12px;background:#2E2814;color:var(--accent);display:flex;align-items:center;justify-content:center}
+.countdown .ic svg{width:20px;height:20px}
+.countdown b{font-family:var(--display);font-size:44px;font-weight:600;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.pill{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;border:1px dashed var(--mid);font-size:12px;color:var(--soft)}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.two .stat b{font-size:20px}
+
+.days{padding:4px 14px 8px;gap:0}
+.day{border-top:1px solid var(--line)}
+.day:first-child{border-top:0}
+.dayrow{width:100%;display:grid;grid-template-columns:70px minmax(0,1fr) 56px;align-items:center;gap:10px;padding:10px 0;background:none;border:0;text-align:left;cursor:pointer}
+.dayrow .d{display:flex;flex-direction:column;gap:3px}
+.dayrow .d strong{font-size:14px}
+.dayrow .d small{font-size:12px;color:var(--muted)}
+.conf{display:flex;gap:3px}
+.conf i{width:6px;height:6px;border-radius:3px;background:#2A303A;display:block}
+.conf i.on{background:var(--soft)}
+.range{display:flex;flex-direction:column;gap:7px;min-width:0}
+.rtrack{position:relative;height:8px;border-radius:4px;background:var(--surface2)}
+.rtrack .r{position:absolute;top:0;bottom:0;border-radius:4px;background:var(--line2)}
+.rtrack .a{position:absolute;top:-4px;width:16px;height:16px;margin-left:-8px;border-radius:8px;border:3px solid var(--surface)}
+.range small{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.avg{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.avg b{font-family:var(--display);font-size:18px;font-weight:600}
+.avg small{font-size:11px;color:var(--muted)}
+.daydetail{padding:0 0 12px;display:flex;flex-direction:column;gap:8px}
+.daydetail .bars{height:110px}
+.tag{font-size:11px;color:var(--soft);border:1px solid var(--line2);border-radius:6px;padding:1px 6px;margin-left:6px;font-weight:500}
+
+.levels{display:grid;gap:8px}
+.grid4{display:grid;gap:4px;font-size:13px;padding:6px 0;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+.grid4.head{font-size:12px;color:var(--muted);border-top:0;padding:4px 0}
+.grid4.sum{font-weight:700;border-top-color:var(--line2);padding-top:8px}
+.grid4 span:not(:first-child){text-align:right}
+.neg{color:var(--lowText)}
+.row{display:flex;justify-content:space-between;gap:8px;font-size:13px}
+.row.sum{font-weight:700;padding-top:6px;border-top:1px solid var(--line2)}
+label.lbl{font-size:13px;font-weight:600}
+.inp{display:flex;align-items:center;gap:10px}
+.inp input{width:96px;min-height:44px;padding:0 12px;border-radius:10px;border:1px solid var(--line2);background:var(--bg);font-size:15px}
+.inp input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.note{font-size:12px;color:var(--muted);line-height:1.45}
+.warn{background:#2E2814;color:#F7DC8B;border-radius:14px;padding:12px 14px;font-size:13px;line-height:1.45}
+
+.notif{background:var(--surface2);border-radius:18px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start}
+.notif .ic{width:36px;height:36px;flex:0 0 36px;border-radius:10px;background:var(--accent);color:var(--bg);display:flex;align-items:center;justify-content:center}
+.notif .ic svg{width:20px;height:20px}
+.notif div{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1 1 auto}
+.notif .meta{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}
+.notif strong{font-size:14px}
+.notif p{margin:0;font-size:13px;color:var(--soft);line-height:1.4}
+.alarm{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.alarm:first-child{border-top:0}
+.alarm div{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1 1 auto}
+.alarm strong{font-size:14px}
+.alarm small{font-size:12px;color:var(--muted);line-height:1.4}
+.state{font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:var(--surface2);color:var(--muted);flex:0 0 auto}
+.state.on{background:var(--accent);color:var(--bg)}
+.foot{font-size:12px;color:var(--muted);line-height:1.5;margin-top:auto}
+.center{display:flex;flex:1;align-items:center;justify-content:center;color:var(--muted);text-align:center}
+@media (min-width:520px){.app{border-left:1px solid var(--line);border-right:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <main id="view" class="view" tabindex="-1"><div class="center">Henter priser …</div></main>
+  <nav class="tabs" aria-label="Hovedmenu">
+    <a href="#i-dag" data-tab="today"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg><span>I dag</span></a>
+    <a href="#i-morgen" data-tab="tomorrow"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>I morgen</span></a>
+    <a href="#prognose" data-tab="forecast"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg><span>Prognose</span></a>
+    <a href="#afgifter" data-tab="fees"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg><span>Afgifter</span></a>
+    <a href="#alarmer" data-tab="alarms"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><span>Alarmer</span></a>
+  </nav>
+</div>
+<script>
+(() => {
+'use strict';
+const TZ = 'Europe/Copenhagen';
+const $view = document.getElementById('view');
+const LS = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+};
+const params = new URLSearchParams(location.search);
+const T0 = Date.now();
+const NOW_OVERRIDE = params.get('now') ? new Date(params.get('now')) : null;   // til test: ?now=2026-11-15T11:30:00%2B01:00
+const now = () => NOW_OVERRIDE ? new Date(NOW_OVERRIDE.getTime() + (Date.now() - T0)) : new Date();
+
+const TABS = { 'i-dag': 'today', 'i-morgen': 'tomorrow', 'prognose': 'forecast', 'afgifter': 'fees', 'alarmer': 'alarms' };
+const S = {
+  data: null, err: null, loadedAt: 0,
+  tab: TABS[location.hash.slice(1)] || 'today',
+  moms: LS.get('moms') !== '0',
+  res: LS.get('res') === 'quarter' ? 'quarter' : 'hour',
+  sel: {}, openDay: null
+};
+
+// ---------- hjælpere ----------
+const pad = n => String(n).padStart(2, '0');
+const fmt = (n, d = 2) => (Math.abs(n) < 0.0005 ? 0 : n).toFixed(d).replace('.', ',').replace('-', '−');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const ymd = d => new Intl.DateTimeFormat('sv-SE', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d);
+const addDays = (s, n) => { const [y, m, d] = s.split('-').map(Number); return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10); };
+const noonUTC = s => { const [y, m, d] = s.split('-').map(Number); return new Date(Date.UTC(y, m - 1, d, 12)); };
+const dayLong = s => new Intl.DateTimeFormat('da-DK', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' }).format(noonUTC(s));
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const wdShort = s => cap(new Intl.DateTimeFormat('da-DK', { weekday: 'short', timeZone: 'UTC' }).format(noonUTC(s)).replace('.', ''));
+const wdLong = s => new Intl.DateTimeFormat('da-DK', { weekday: 'long', timeZone: 'UTC' }).format(noonUTC(s));
+const dm = s => { const [, m, d] = s.split('-').map(Number); return `${d}/${m}`; };
+const hm = d => new Intl.DateTimeFormat('da-DK', { hour: '2-digit', minute: '2-digit', timeZone: TZ }).format(d).replace(':', '.');
+const vat = () => (S.data && typeof S.data.vat === 'number') ? S.data.vat : 0.25;
+
+function markupInkl() {
+  const v = LS.get('tillaeg');
+  if (v !== null && v.trim() !== '') { const n = parseFloat(v.replace(',', '.')); if (!isNaN(n)) return n / 100; }
+  return (S.data && S.data.markup) || 0;
+}
+function total(spot, tariff) {
+  const incl = (spot + tariff) * (1 + vat()) + markupInkl();
+  return S.moms ? incl : incl / (1 + vat());
+}
+const withVat = x => S.moms ? x * (1 + vat()) : x;
+const momsNote = () => S.moms ? 'inkl. afgifter og moms' : 'inkl. afgifter, ekskl. moms';
+
+function series(day, res) {
+  const out = [];
+  for (const h of day.hours) {
+    const H = parseInt(h.h, 10);
+    if (day.kind === 'actual') {
+      const start = new Date(h.t);
+      if (res === 'quarter' && h.q && h.q.length) {
+        const step = 60 / h.q.length;
+        h.q.forEach((s, i) => out.push({ start: new Date(start.getTime() + i * step * 60000), mins: step, H, m: i * step, v: total(s, h.tariff) }));
+      } else out.push({ start, mins: 60, H, m: 0, v: total(h.spot, h.tariff) });
+    } else {
+      out.push({ H, m: 0, mins: 60, v: total(h.spot, h.tariff), lo: total(h.lo, h.tariff), hi: total(h.hi, h.tariff) });
+    }
+  }
+  return out;
+}
+const span = x => x.mins === 60 ? `${pad(x.H)}–${pad((x.H + 1) % 24)}` : `${pad(x.H)}.${pad(x.m)}–${pad(x.m + x.mins === 60 ? (x.H + 1) % 24 : x.H)}.${pad((x.m + x.mins) % 60)}`;
+const at = x => x.mins === 60 ? pad(x.H) : `${pad(x.H)}.${pad(x.m)}`;
+
+function levelFn(vals) {
+  const s = [...vals].sort((a, b) => a - b);
+  const lo = s[Math.floor((s.length - 1) / 3)], hi = s[Math.ceil((s.length - 1) * 2 / 3)];
+  return v => v <= lo ? 'low' : (v >= hi ? 'high' : 'mid');
+}
+const LEVEL_NAME = { low: 'Billig', mid: 'Middel', high: 'Dyr' };
+
+function bestWindow(vals, n, from = 0) {
+  let bi = -1, bs = Infinity;
+  for (let i = Math.max(0, from); i + n <= vals.length; i++) {
+    let s = 0; for (let j = i; j < i + n; j++) s += vals[j];
+    if (s < bs) { bs = s; bi = i; }
+  }
+  return bi < 0 ? null : { i: bi, avg: bs / n };
+}
+function nowIndex(items) {
+  const t = now().getTime();
+  return items.findIndex(x => x.start && x.start.getTime() <= t && t < x.start.getTime() + x.mins * 60000);
+}
+const findDay = date => S.data && S.data.days.find(d => d.date === date);
+const findFc = date => S.data && (S.data.forecast || []).find(d => d.date === date);
+const windowHours = () => Math.max(1, parseInt((S.data && S.data.alarms && S.data.alarms.billigste_timer_i_morgen && S.data.alarms.billigste_timer_i_morgen.antal_timer) || 3, 10));
+
+// ---------- byggeklodser ----------
+const ICON = {
+  pin: '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>',
+  clock: '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  trend: '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>',
+  bolt: '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width:2.2"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg>'
+};
+const momsSwitch = () => `<button class="switch" data-act="moms" aria-pressed="${S.moms}"><span>Inkl. moms</span><span class="track"><span class="knob"></span></span></button>`;
+const head = (title, sub, withMoms = true) =>
+  `<div class="top"><div><h1>${esc(title)}</h1>${sub ? `<div class="sub">${esc(sub)}</div>` : ''}</div>${withMoms ? momsSwitch() : ''}</div>`;
+
+function barsHTML(items, { key, sel = -1, nowI = -1, dashed = false, lvl, height = 150 }) {
+  const max = Math.max(0.01, ...items.map(x => x.v));
+  const dense = items.length > 30;
+  const lv = lvl || levelFn(items.map(x => x.v));
+  return `<div class="bars${dense ? ' dense' : ''}" style="height:${height + 18}px">` + items.map((x, i) => {
+    const h = Math.max(3, Math.round(Math.max(0, x.v) / max * height));
+    const cls = `bar lv-${lv(x.v)}${i === sel ? ' sel' : ''}${dashed ? ' dashed' : ''}`;
+    return `<button class="${cls}" data-act="sel" data-key="${key}" data-i="${i}" aria-label="Kl. ${at(x)}: ${dashed ? 'ca. ' : ''}${fmt(x.v)} kr/kWh"><span class="dot${i === nowI ? ' on' : ''}"></span><span class="fill" style="height:${h}px"></span></button>`;
+  }).join('') + '</div>';
+}
+function axisHTML(items) {
+  const dense = items.length > 30;
+  return `<div class="axis${dense ? ' dense' : ''}" aria-hidden="true">` + items.map(x => `<span>${x.m === 0 && x.H % 6 === 0 ? pad(x.H) : ''}</span>`).join('') + '</div>';
+}
+const legend = (withNow) => `<div class="legend"><span><i class="b-low"></i>Billig</span><span><i class="b-mid"></i>Middel</span><span><i class="b-high"></i>Dyr</span>${withNow ? '<span class="nu"><i></i>Nu</span>' : ''}</div>`;
+const resSeg = () => `<div class="seg" role="group" aria-label="Opløsning"><button data-act="res" data-v="hour" aria-pressed="${S.res === 'hour'}">Time</button><button data-act="res" data-v="quarter" aria-pressed="${S.res === 'quarter'}">Kvarter</button></div>`;
+
+function footer() {
+  if (!S.data) return '';
+  const g = new Date(S.data.generated);
+  const age = (now() - g) / 3600000;
+  const warn = age > 26 ? `<div class="warn">Priserne er ikke blevet opdateret siden ${dayLong(ymd(g))} kl. ${hm(g)}. Tjek at GitHub Actions kører.</div>` : '';
+  return `${warn}<div class="foot">Opdateret ${ymd(g) === ymd(now()) ? 'i dag' : dayLong(ymd(g))} kl. ${hm(g)} · Kilde: Energinet${S.data.forecast_source ? ' og ' + esc(S.data.sources.forecast) : ''}</div>`;
+}
+
+// ---------- visninger ----------
+function dayPanel(day, key, isToday) {
+  const items = series(day, S.res);
+  const lvl = levelFn(items.map(x => x.v));
+  const nowI = isToday ? nowIndex(items) : -1;
+  const vals = items.map(x => x.v);
+  const minI = vals.indexOf(Math.min(...vals)), maxI = vals.indexOf(Math.max(...vals));
+  let sel = S.sel[key + S.res];
+  if (sel == null || sel >= items.length) sel = nowI >= 0 ? nowI : minI;
+  const x = items[sel];
+  const lbl = (sel === nowI ? 'Nu' : (isToday ? 'I dag' : 'I morgen')) + ' · kl. ' + span(x) + (!isToday && sel === minI ? ' · billigst' : '');
+  const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+
+  // billigste periode (på timeniveau)
+  const hourly = series(day, 'hour');
+  const hv = hourly.map(h => h.v);
+  const n = windowHours();
+  let from = 0, scope = isToday ? 'i dag' : 'i morgen';
+  if (isToday) {
+    const ni = nowIndex(hourly);
+    if (ni >= 0 && hourly.length - ni >= n) { from = ni; scope = 'resten af dagen'; }
+  }
+  const w = bestWindow(hv, n, from);
+  const tip = w ? `<div class="tip"><span class="ic">${ICON.clock}</span><div><strong>Billigste ${n} timer: <span style="white-space:nowrap">kl. ${pad(hourly[w.i].H)}–${pad((hourly[w.i + n - 1].H + 1) % 24)}</span></strong><small>${cap(scope)} · gns. ${fmt(w.avg)} kr/kWh</small></div></div>` : '';
+
+  return `
+  <div class="hero">
+    <div class="lbl">${lbl}</div>
+    <div class="big"><b>${fmt(x.v)}</b><span>kr/kWh</span></div>
+    <div class="chiprow"><span class="chip t-${lvl(x.v)}"><i class="b-${lvl(x.v)}"></i>${LEVEL_NAME[lvl(x.v)]} ${x.mins === 60 ? 'time' : 'kvarter'}</span><span class="muted">${momsNote()}</span></div>
+  </div>
+  <div class="stats">
+    <div class="stat"><small>Laveste</small><b class="t-low">${fmt(vals[minI])}</b><small>kl. ${at(items[minI])}</small></div>
+    <div class="stat"><small>Gennemsnit</small><b>${fmt(avg)}</b><small>hele døgnet</small></div>
+    <div class="stat"><small>Højeste</small><b class="t-high">${fmt(vals[maxI])}</b><small>kl. ${at(items[maxI])}</small></div>
+  </div>
+  <div class="card">
+    <div class="cardhead"><strong>${cap(dayLong(day.date))}</strong>${resSeg()}</div>
+    ${barsHTML(items, { key: key + S.res, sel, nowI, lvl })}
+    ${axisHTML(items)}
+    ${legend(isToday)}
+  </div>
+  ${tip}`;
+}
+
+function viewToday() {
+  const today = ymd(now());
+  const day = findDay(today);
+  const top = `<div class="top"><div class="where">${ICON.pin}<span>${esc(S.data.name)} · ${esc(S.data.area)}</span></div>${momsSwitch()}</div>`;
+  if (!day) return top + `<div class="warn">Der er ingen priser for i dag i datafilen endnu.</div>` + footer();
+  return top + dayPanel(day, 'today', true) + footer();
+}
+
+function nextRelease() {
+  const n = now();
+  const today = ymd(n);
+  // 13.15 dansk tid i dag – find tidspunktet ved at prøve begge mulige UTC-forskydninger
+  for (const off of ['+01:00', '+02:00']) {
+    const t = new Date(`${today}T13:15:00${off}`);
+    if (hm(t) === '13.15') return t > n ? t : new Date(t.getTime() + 86400000);
+  }
+  return new Date(n.getTime() + 3600000);
+}
+function cdText() {
+  const d = Math.max(0, Math.floor((nextRelease() - now()) / 1000));
+  return `${pad(Math.floor(d / 3600))}:${pad(Math.floor(d % 3600 / 60))}:${pad(d % 60)}`;
+}
+
+function viewTomorrow() {
+  const tm = addDays(ymd(now()), 1);
+  const day = findDay(tm);
+  if (day) return head('I morgen', cap(dayLong(tm))) + dayPanel(day, 'tomorrow', false) + footer();
+  const past = hm(now()) >= '13.15';
+  const fc = findFc(tm);
+  let fcHTML = '';
+  if (fc) {
+    const items = series(fc, 'hour');
+    const vals = items.map(x => x.v);
+    const n = windowHours();
+    const w = bestWindow(vals, n);
+    const maxI = vals.indexOf(Math.max(...vals));
+    let sel = S.sel['fc' + tm];
+    fcHTML = `
+    <div class="card">
+      <div class="cardhead"><strong>Forventet pris i morgen</strong><span class="pill">Prognose</span></div>
+      ${barsHTML(items, { key: 'fc' + tm, sel: sel == null ? -1 : sel, dashed: true, height: 140 })}
+      ${axisHTML(items)}
+      <div class="note">${sel != null ? `Kl. ${span(items[sel])}: ca. ${fmt(items[sel].v)} kr/kWh (${fmt(items[sel].lo)}–${fmt(items[sel].hi)}). ` : ''}Spotprognose plus dine kendte tariffer. Kan afvige fra de endelige priser.</div>
+    </div>
+    <div class="two">
+      <div class="stat"><small>Billigste ${n} timer</small><b class="t-low">kl. ${pad(items[w.i].H)}–${pad((items[w.i + n - 1].H + 1) % 24)}</b><small>ca. ${fmt(w.avg)} kr/kWh</small></div>
+      <div class="stat"><small>Dyreste time</small><b class="t-high">kl. ${span(items[maxI])}</b><small>ca. ${fmt(vals[maxI])} kr/kWh</small></div>
+    </div>`;
+  }
+  return head('I morgen', cap(dayLong(tm))) + `
+  <div class="card countdown">
+    <span class="ic">${ICON.clock}</span>
+    <span class="muted" style="color:var(--soft);font-size:14px">${past ? 'Morgendagens priser er på vej' : 'Morgendagens priser kommer ca. kl. 13.15'}</span>
+    ${past ? '<span class="note">De er normalt ude nu. Appen henter dem automatisk, så snart de ligger i datafilen.</span>' : `<b id="cd" aria-live="off">${cdText()}</b><span class="note">Prognosen herunder skiftes ud med de rigtige priser.</span>`}
+  </div>` + fcHTML + footer();
+}
+
+function viewForecast() {
+  const today = ymd(now());
+  const rows = [];
+  for (let i = 1; i <= 7; i++) {
+    const ds = addDays(today, i);
+    const a = findDay(ds), f = findFc(ds);
+    const d = a || f;
+    if (!d) continue;
+    const items = series(d, 'hour');
+    const vals = items.map(x => x.v);
+    const avg = vals.reduce((p, c) => p + c, 0) / vals.length;
+    const lo = Math.min(...vals), hi = Math.max(...vals);
+    const w = bestWindow(vals, windowHours());
+    rows.push({ ds, d, items, avg, lo, hi, w, actual: !!a, conf: a ? 3 : (f.conf || 1) });
+  }
+  if (!rows.length) return head('Prognose', 'Ingen prognose i datafilen') + footer();
+  const all = rows.flatMap(r => [r.lo, r.hi]);
+  const LO = Math.min(...all) - 0.05, HI = Math.max(...all) + 0.05;
+  const pos = v => ((v - LO) / (HI - LO) * 100).toFixed(1);
+  const week = rows.reduce((p, r) => p + r.avg, 0) / rows.length;
+  const best = rows.reduce((p, r) => r.avg < p.avg ? r : p, rows[0]);
+  const avgLvl = levelFn(rows.map(r => r.avg));
+  const last = rows[rows.length - 1].ds;
+
+  const list = rows.map(r => {
+    const lv = avgLvl(r.avg);
+    const open = S.openDay === r.ds;
+    const detail = open ? `<div class="daydetail">${barsHTML(r.items, { key: 'd' + r.ds, sel: S.sel['d' + r.ds] ?? -1, dashed: !r.actual, height: 92 })}${axisHTML(r.items)}
+      <div class="note">${S.sel['d' + r.ds] != null ? (() => { const x = r.items[S.sel['d' + r.ds]]; return `Kl. ${span(x)}: ${r.actual ? '' : 'ca. '}${fmt(x.v)} kr/kWh${x.lo != null ? ` (${fmt(x.lo)}–${fmt(x.hi)})` : ''}. `; })() : ''}${r.actual ? 'Endelige priser.' : 'Prognose – tryk på en søjle for at se usikkerheden.'}</div></div>` : '';
+    return `<div class="day">
+      <button class="dayrow" data-act="day" data-v="${r.ds}" aria-expanded="${open}">
+        <span class="d"><strong>${wdShort(r.ds)}</strong><small>${dm(r.ds)}${r.actual ? ' · faktisk' : ''}</small>
+          <span class="conf" role="img" aria-label="${['', 'Lav', 'Middel', 'Høj'][r.conf]} sikkerhed"><i class="${r.conf >= 1 ? 'on' : ''}"></i><i class="${r.conf >= 2 ? 'on' : ''}"></i><i class="${r.conf >= 3 ? 'on' : ''}"></i></span></span>
+        <span class="range"><span class="rtrack"><span class="r" style="left:${pos(r.lo)}%;width:${(pos(r.hi) - pos(r.lo)).toFixed(1)}%"></span><span class="a b-${lv}" style="left:${pos(r.avg)}%"></span></span>
+          <small>${fmt(r.lo)}–${fmt(r.hi)}${r.w ? ` · billigst kl. ${pad(r.items[r.w.i].H)}–${pad((r.items[r.w.i + windowHours() - 1].H + 1) % 24)}` : ''}</small></span>
+        <span class="avg"><b class="t-${lv}">${fmt(r.avg)}</b><small>gns.</small></span>
+      </button>${detail}</div>`;
+  }).join('');
+
+  const pct = Math.round((1 - best.avg / week) * 100);
+  return head('Prognose', `${dm(rows[0].ds)}–${dm(last)} · inkl. afgifter`) + `
+  <div class="tip blue"><span class="ic">${ICON.trend}</span><div><strong>Billigste dag: ${wdLong(best.ds)} ${dm(best.ds)}</strong><small>Gns. ${fmt(best.avg)} kr/kWh${pct > 0 ? ` – ${pct} % under ugens snit` : ''}</small></div></div>
+  <div class="card days">${list}</div>
+  <div class="note">Prikkerne viser, hvor sikker prognosen er – den bliver mere usikker, jo længere ude den ligger. Tryk på en dag for at se timerne.</div>` + footer();
+}
+
+function tariffLevels(totals) {
+  const uniq = [...new Set(totals.map(v => v.toFixed(5)))].map(Number).sort((a, b) => a - b);
+  const names = uniq.length === 3 ? ['Lavlast', 'Dag', 'Spidslast'] : uniq.length === 2 ? ['Lav', 'Høj'] : uniq.length === 1 ? ['Alle timer'] : uniq.map((_, i) => 'Niveau ' + (i + 1));
+  return uniq.map((v, i) => {
+    const hours = totals.map((t, h) => t.toFixed(5) === v.toFixed(5) ? h : -1).filter(h => h >= 0);
+    const ranges = []; let s = hours[0], p = hours[0];
+    for (const h of hours.slice(1).concat([null])) { if (h === p + 1) { p = h; continue; } ranges.push(`${pad(s)}–${pad(p + 1)}`); s = p = h; }
+    return { v, name: names[i], hours: ranges.length > 1 ? ranges.join(', ') : 'kl. ' + ranges[0], rep: hours[0], lvl: uniq.length >= 3 ? ['low', 'mid', 'high'][Math.min(2, Math.round(i * 2 / (uniq.length - 1)))] : (i === 0 ? 'low' : 'high') };
+  });
+}
+
+function viewFees() {
+  const T = S.data.tariffs;
+  const comps = T.components;
+  const totals = Array.from({ length: 24 }, (_, h) => comps.reduce((s, c) => s + c.prices[h], 0));
+  const L = tariffLevels(totals);
+  const cols = `grid-template-columns:minmax(0,1fr) ${L.map(() => '56px').join(' ')}`;
+  const dec = 3;
+  const cards = `<div class="stats" style="grid-template-columns:repeat(${Math.min(L.length, 3)},minmax(0,1fr))">` + L.slice(0, 3).map(l =>
+    `<div class="stat"><small>${l.name}</small><b class="t-${l.lvl}">${fmt(withVat(l.v))}</b><small>${l.hours}</small></div>`).join('') + '</div>';
+  const rows = comps.map(c => `<div class="grid4" style="${cols}"><span>${esc(c.name)}</span>${L.map(l => { const v = c.prices[l.rep]; return `<span class="${v < 0 ? 'neg' : ''}">${fmt(withVat(v), dec)}</span>`; }).join('')}</div>`).join('');
+  const sum = `<div class="grid4 sum" style="${cols}"><span>I alt</span>${L.map(l => `<span>${fmt(withVat(l.v), dec)}</span>`).join('')}</div>`;
+  const avg24 = a => a.reduce((s, v) => s + v, 0) / a.length;
+  const flatTxt = (a, unit) => unit === 'md' ? fmt(withVat(a[0]), 2) + ' kr/md'
+    : (Math.max(...a) - Math.min(...a) < 1e-6) ? fmt(withVat(a[0]), 3) : 'gns. ' + fmt(withVat(avg24(a)), 3);
+  const changes = (T.changes || []).length ? `<div class="card"><strong style="font-size:14px">Kommende ændringer</strong>${T.changes.map(c =>
+    `<div class="row" style="flex-direction:column;gap:2px"><span class="muted" style="font-size:12px">${new Intl.DateTimeFormat('da-DK', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(noonUTC(c.date))}</span><span style="display:flex;justify-content:space-between;gap:8px"><span>${esc(c.name)}</span><span style="white-space:nowrap">${flatTxt(c.before, c.unit).replace(' kr/md', '')} → ${flatTxt(c.after, c.unit).replace('gns. ', '')}</span></span></div>`).join('')}</div>` : '';
+  const subs = S.data.subscriptions || [];
+  const subsHTML = subs.length ? `<div class="card" style="gap:6px"><span class="note">Faste abonnementer pr. måned (inkl. moms)</span>${subs.map(s => `<div class="row"><span>${esc(s.navn)}</span><span class="${s.kr < 0 ? 'neg' : ''}">${fmt(s.kr)} kr</span></div>`).join('')}<div class="row sum"><span>I alt</span><span>${fmt(subs.reduce((a, s) => a + s.kr, 0))} kr/md</span></div></div>` : '';
+  const till = LS.get('tillaeg') ?? (S.data.markup ? String(Math.round(S.data.markup * 1000) / 10).replace('.', ',') : '');
+  return head('Afgifter', `${S.data.grid.replace(/ A\/S - \d+$/, '').replace(/ - \d+$/, '')} · Nettarif C`) + cards + `
+  <div class="card" style="gap:2px">
+    <span class="note" style="padding-bottom:6px">Det, der lægges oveni spotprisen, i kr/kWh:</span>
+    <div class="grid4 head" style="${cols}"><span></span>${L.map(l => `<span>${l.name.replace('last', '')}</span>`).join('')}</div>
+    ${rows}${sum}
+  </div>
+  ${changes}${subsHTML}
+  <div class="card">
+    <label class="lbl" for="tillaeg">Dit elselskabs tillæg</label>
+    <div class="inp"><input id="tillaeg" inputmode="decimal" autocomplete="off" placeholder="fx 5,0" value="${esc(till)}"><span class="muted" style="font-size:13px">øre/kWh inkl. moms</span></div>
+    <span class="note" id="tillnote">${tillNote()}</span>
+  </div>` + footer();
+}
+function tillNote() {
+  const m = markupInkl();
+  return m ? `Lægges oveni alle priser i appen (${fmt(m * 100, 1)} øre/kWh). Gemmes kun på denne telefon.` : 'Står på din elaftale. Lægges oveni alle priser i appen og gemmes kun på denne telefon.';
+}
+
+function viewAlarms() {
+  const a = S.data.alarms || {};
+  const fmtk = v => fmt(Number(v));
+  const defs = [
+    ['billigste_timer_i_morgen', x => 'Morgendagens billigste timer', x => `Hver dag, når priserne er ude · ${x.antal_timer || 3} timer i træk`],
+    ['pris_under', x => `Pris under ${fmtk(x.graense_kr)} kr/kWh`, x => 'Besked når en billig periode starter'],
+    ['pris_over_i_morgen', x => `Pris over ${fmtk(x.graense_kr)} kr/kWh i morgen`, x => 'Besked dagen før, så du kan flytte forbrug'],
+    ['billig_dag_i_prognose', x => 'Billig dag på vej', x => `Når en dag i prognosen er ${x.procent_under_snit || 15} % under ugens snit`]
+  ];
+  const list = defs.filter(([k]) => a[k]).map(([k, t, d]) => {
+    const x = a[k];
+    return `<div class="alarm"><div><strong style="color:${x.aktiv ? 'var(--text)' : 'var(--muted)'}">${esc(t(x))}</strong><small>${esc(d(x))}</small></div><span class="state${x.aktiv ? ' on' : ''}">${x.aktiv ? 'Til' : 'Fra'}</span></div>`;
+  }).join('');
+  const rec = (S.data.recent_alarms || []);
+  const recHTML = rec.length ? rec.slice(0, 6).map(r => {
+    const t = new Date(r.t);
+    return `<div class="notif"><span class="ic">${ICON.bolt}</span><div><div class="meta"><span>ntfy · Elpris</span><span>${ymd(t) === ymd(now()) ? '' : dm(ymd(t)) + ' '}${hm(t)}</span></div><strong>${esc(r.title)}</strong><p>${esc(r.message)}</p></div></div>`;
+  }).join('') : '<div class="note">Ingen beskeder sendt endnu.</div>';
+  return head('Alarmer', 'Sendes som push-besked via ntfy', false) + `
+  <div class="card" style="padding:4px 14px">${list}</div>
+  <div class="note">Alarmerne køres af scriptet på GitHub – også når appen er lukket. Ret grænser og slå dem til og fra i <b>config.json</b>.</div>
+  <strong style="font-size:14px">Seneste beskeder</strong>
+  ${recHTML}` + footer();
+}
+
+const VIEWS = { today: viewToday, tomorrow: viewTomorrow, forecast: viewForecast, fees: viewFees, alarms: viewAlarms };
+
+function render() {
+  document.querySelectorAll('.tabs a').forEach(a => { if (a.dataset.tab === S.tab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+  if (!S.data) {
+    $view.innerHTML = `<div class="center">${S.err ? 'Kunne ikke hente priserne.<br>' + esc(S.err) : 'Henter priser …'}</div>`;
+    return;
+  }
+  try { $view.innerHTML = VIEWS[S.tab](); }
+  catch (e) { console.error(e); $view.innerHTML = `<div class="warn">Noget gik galt i visningen: ${esc(e.message)}</div>`; }
+}
+
+// ---------- hændelser ----------
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]');
+  if (!b) return;
+  const act = b.dataset.act;
+  if (act === 'moms') { S.moms = !S.moms; LS.set('moms', S.moms ? '1' : '0'); }
+  else if (act === 'res') { S.res = b.dataset.v; LS.set('res', S.res); }
+  else if (act === 'sel') { const k = b.dataset.key, i = +b.dataset.i; S.sel[k] = S.sel[k] === i && k.startsWith('d') ? null : i; }
+  else if (act === 'day') { S.openDay = S.openDay === b.dataset.v ? null : b.dataset.v; }
+  render();
+});
+document.addEventListener('input', e => {
+  if (e.target.id !== 'tillaeg') return;
+  LS.set('tillaeg', e.target.value);
+  const n = document.getElementById('tillnote'); if (n) n.textContent = tillNote();
+});
+window.addEventListener('hashchange', () => { S.tab = TABS[location.hash.slice(1)] || 'today'; render(); window.scrollTo(0, 0); });
+
+// ---------- data ----------
+async function load() {
+  try {
+    const r = await fetch('data.json?t=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    const changed = !S.data || d.generated !== S.data.generated;
+    S.data = d; S.err = null; S.loadedAt = Date.now();
+    if (changed && !(document.activeElement && document.activeElement.id === 'tillaeg')) render();
+  } catch (e) {
+    S.err = e.message;
+    if (!S.data) render();
+  }
+}
+load();
+setInterval(load, 10 * 60 * 1000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() - S.loadedAt > 60000) load(); });
+
+// nedtælling og skift af "nu"
+let lastMinute = -1;
+setInterval(() => {
+  const el = document.getElementById('cd');
+  if (el) el.textContent = cdText();
+  const m = Math.floor(now().getTime() / 60000);
+  if (m !== lastMinute) {
+    if (lastMinute >= 0 && m % 15 === 0 && S.data && document.activeElement?.id !== 'tillaeg') render();
+    lastMinute = m;
+  }
+}, 1000);
+
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+})();
+</script>
+</body>
+</html>

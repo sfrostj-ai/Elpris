@@ -1,0 +1,44 @@
+{
+  "navn": "Hjem",
+  "prisomraade": "DK1",
+
+  "netselskab": {
+    "navn": "Konstant Net A/S - 151",
+    "gln": "5790000704842",
+    "tariffer": {
+      "C_FBTNTR_B": "Nettarif C",
+      "C_FBTNTR_R": "Rabat, Konstant"
+    },
+    "abonnementer": {
+      "C_FBAHM__B": "Net abo C",
+      "C_FBAHM__R": "Rabat, Konstant"
+    }
+  },
+
+  "energinet": {
+    "gln": "5790000432752",
+    "tariffer": {
+      "41000": "Systemtarif",
+      "40000": "Transmissionstarif",
+      "EA-001": "Elafgift"
+    }
+  },
+
+  "elselskab_tillaeg_oere_inkl_moms": 0,
+
+  "ekstra_abonnementer_kr_pr_md_inkl_moms": [
+    { "navn": "TSO-abonnement", "kr": 19.48 }
+  ],
+
+  "prognose": {
+    "kilde": "elpriser",
+    "dage": 7
+  },
+
+  "alarmer": {
+    "billigste_timer_i_morgen": { "aktiv": true, "antal_timer": 3 },
+    "pris_under": { "aktiv": true, "graense_kr": 1.00 },
+    "pris_over_i_morgen": { "aktiv": false, "graense_kr": 2.50 },
+    "billig_dag_i_prognose": { "aktiv": true, "procent_under_snit": 15 }
+  }
+}
