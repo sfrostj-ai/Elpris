@@ -2,9 +2,15 @@
  "sent": {
   "tomorrow:2026-11-16": "2026-11-15T14:21+01:00",
   "tomorrow:2026-11-17": "2026-11-16T13:37+01:00",
-  "tomorrow:2026-11-18": "2026-11-17T13:11+01:00"
+  "tomorrow:2026-11-18": "2026-11-17T13:11+01:00",
+  "cheapday:2026-11-21": "2026-11-17T14:09+01:00"
  },
  "log": [
+  {
+   "t": "2026-11-17T14:09+01:00",
+   "title": "Billig dag på vej",
+   "message": "Lørdag 21/11 ser ud til at blive ca. 16 % billigere end ugens snit (gns. 1,68 kr/kWh)."
+  },
   {
    "t": "2026-11-17T13:11+01:00",
    "title": "Morgendagens billigste timer",
