@@ -6,9 +6,21 @@
   "cheapday:2026-11-21": "2026-11-17T14:09+01:00",
   "tomorrow:2026-11-19": "2026-11-18T13:17+01:00",
   "cheapday:2026-11-26": "2026-11-19T00:54+01:00",
-  "tomorrow:2026-11-20": "2026-11-19T13:20+01:00"
+  "tomorrow:2026-11-20": "2026-11-19T13:20+01:00",
+  "tomorrow:2026-11-21": "2026-11-20T14:14+01:00",
+  "cheapday:2026-11-27": "2026-11-20T14:14+01:00"
  },
  "log": [
+  {
+   "t": "2026-11-20T14:14+01:00",
+   "title": "Billig dag på vej",
+   "message": "Fredag 27/11 ser ud til at blive ca. 20 % billigere end ugens snit (gns. 1,63 kr/kWh)."
+  },
+  {
+   "t": "2026-11-20T14:14+01:00",
+   "title": "Morgendagens billigste timer",
+   "message": "Kl. 11–14 · ca. 1,74 kr/kWh. Billigst kl. 13 (1,69 kr), dyrest kl. 18 (2,79 kr)."
+  },
   {
    "t": "2026-11-19T13:20+01:00",
    "title": "Morgendagens billigste timer",
