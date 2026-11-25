@@ -14,9 +14,15 @@
   "cheapday:2026-11-29": "2026-11-22T00:42+01:00",
   "tomorrow:2026-11-23": "2026-11-22T13:56+01:00",
   "tomorrow:2026-11-24": "2026-11-23T13:20+01:00",
-  "tomorrow:2026-11-25": "2026-11-24T13:22+01:00"
+  "tomorrow:2026-11-25": "2026-11-24T13:22+01:00",
+  "tomorrow:2026-11-26": "2026-11-25T13:26+01:00"
  },
  "log": [
+  {
+   "t": "2026-11-25T13:26+01:00",
+   "title": "Morgendagens billigste timer",
+   "message": "Kl. 02–05 · ca. 2,06 kr/kWh. Billigst kl. 03 (2,03 kr), dyrest kl. 17 (4,27 kr)."
+  },
   {
    "t": "2026-11-24T13:22+01:00",
    "title": "Morgendagens billigste timer",
@@ -86,11 +92,6 @@
    "t": "2026-11-16T13:37+01:00",
    "title": "Morgendagens billigste timer",
    "message": "Kl. 21–00 · ca. 1,91 kr/kWh. Billigst kl. 23 (1,75 kr), dyrest kl. 17 (2,82 kr)."
-  },
-  {
-   "t": "2026-11-15T14:21+01:00",
-   "title": "Morgendagens billigste timer",
-   "message": "Kl. 02–05 · ca. 1,28 kr/kWh. Billigst kl. 04 (1,28 kr), dyrest kl. 18 (3,22 kr)."
   }
  ]
 }
