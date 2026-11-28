@@ -17,9 +17,15 @@
   "tomorrow:2026-11-25": "2026-11-24T13:22+01:00",
   "tomorrow:2026-11-26": "2026-11-25T13:26+01:00",
   "tomorrow:2026-11-27": "2026-11-26T13:05+01:00",
-  "tomorrow:2026-11-28": "2026-11-27T13:20+01:00"
+  "tomorrow:2026-11-28": "2026-11-27T13:20+01:00",
+  "tomorrow:2026-11-29": "2026-11-28T13:08+01:00"
  },
  "log": [
+  {
+   "t": "2026-11-28T13:08+01:00",
+   "title": "Morgendagens billigste timer",
+   "message": "Kl. 04–07 · ca. 1,56 kr/kWh. Billigst kl. 05 (1,51 kr), dyrest kl. 18 (2,96 kr)."
+  },
   {
    "t": "2026-11-27T13:20+01:00",
    "title": "Morgendagens billigste timer",
@@ -89,11 +95,6 @@
    "t": "2026-11-18T13:17+01:00",
    "title": "Morgendagens billigste timer",
    "message": "Kl. 00–03 · ca. 1,83 kr/kWh. Billigst kl. 02 (1,82 kr), dyrest kl. 18 (3,18 kr)."
-  },
-  {
-   "t": "2026-11-17T14:09+01:00",
-   "title": "Billig dag på vej",
-   "message": "Lørdag 21/11 ser ud til at blive ca. 16 % billigere end ugens snit (gns. 1,68 kr/kWh)."
   }
  ]
 }
